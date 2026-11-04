@@ -1,0 +1,215 @@
+{
+  "name": "NOOP Forge",
+  "identifier": "com.noopapp.noopai.source",
+  "sourceURL": "https://raw.githubusercontent.com/DX23876/noop/main/altstore-source.json",
+  "subtitle": "Your strap, your data, on your device.",
+  "description": "An AltStore and SideStore source for NOOP Forge, an independent fork of NOOP by ryanbr. This source uses the phone/iPad IPA with Home and Lock Screen widgets; the separate Full IPA adds the Apple Watch app and complication. Both are unsigned by design. NOOP Forge has no account, cloud service, or distribution signing identity.",
+  "iconURL": "https://raw.githubusercontent.com/DX23876/noop/main/Strand/Resources/Assets.xcassets/AppIcon.appiconset/icon_512x512.png",
+  "website": "https://github.com/DX23876/noop",
+  "tintColor": "44E2B0",
+  "apps": [
+    {
+      "name": "NOOP Forge",
+      "bundleIdentifier": "com.noopapp.noopai",
+      "developerName": "NOOP Forge",
+      "subtitle": "A local-first companion for your WHOOP strap.",
+      "localizedDescription": "NOOP Forge reads a WHOOP 4.0 or 5.0/MG strap you own directly over Bluetooth. Scores, history, goals, and coach memory stay on your device. The optional coach uses only the provider and API key you choose when you send a message.\n\nThis phone/iPad IPA is unsigned on purpose, includes Home and Lock Screen widgets, and omits only the Watch app for reliable AltStore/SideStore signing with a free Apple ID. The separate Full IPA adds the Watch app and complication.",
+      "iconURL": "https://raw.githubusercontent.com/DX23876/noop/main/Strand/Resources/Assets.xcassets/AppIcon.appiconset/icon_512x512.png",
+      "tintColor": "44E2B0",
+      "category": "healthcare-fitness",
+      "screenshotURLs": [],
+      "versions": [
+        {
+          "version": "12.2.0",
+          "buildVersion": "331",
+          "date": "2026-10-18",
+          "localizedDescription": "NOOP Forge 12.2.0. See the release notes for what changed.",
+          "downloadURL": "https://github.com/DX23876/noop/releases/download/v12.2.0-dx/NOOP-ios-unsigned-v12.2.0-dx.ipa",
+          "size": 411979759,
+          "minOSVersion": "17.0"
+        },
+        {
+          "version": "12.1.2",
+          "buildVersion": "330",
+          "date": "2026-10-17",
+          "localizedDescription": "NOOP Forge 12.1.2. See the release notes for what changed.",
+          "downloadURL": "https://github.com/DX23876/noop/releases/download/v12.1.2-dx/NOOP-ios-unsigned-v12.1.2-dx.ipa",
+          "size": 411662553,
+          "minOSVersion": "17.0"
+        },
+        {
+          "version": "12.1.1",
+          "buildVersion": "329",
+          "date": "2026-10-16",
+          "localizedDescription": "NOOP Forge 12.1.1. See the release notes for what changed.",
+          "downloadURL": "https://github.com/DX23876/noop/releases/download/v12.1.1-dx/NOOP-ios-unsigned-v12.1.1-dx.ipa",
+          "size": 411642559,
+          "minOSVersion": "17.0"
+        },
+        {
+          "version": "12.1.0",
+          "buildVersion": "328",
+          "date": "2026-10-16",
+          "localizedDescription": "NOOP Forge 12.1.0. See the release notes for what changed.",
+          "downloadURL": "https://github.com/DX23876/noop/releases/download/v12.1.0-dx/NOOP-ios-unsigned-v12.1.0-dx.ipa",
+          "size": 411631966,
+          "minOSVersion": "17.0"
+        },
+        {
+          "version": "12.0.1",
+          "buildVersion": "327",
+          "date": "2026-10-09",
+          "localizedDescription": "NOOP Forge 12.0.1. See the release notes for what changed.",
+          "downloadURL": "https://github.com/DX23876/noop/releases/download/v12.0.1-dx/NOOP-ios-unsigned-v12.0.1-dx.ipa",
+          "size": 411065291,
+          "minOSVersion": "17.0"
+        },
+        {
+          "version": "11.8.5",
+          "buildVersion": "326",
+          "date": "2026-10-03",
+          "localizedDescription": "NOOP Forge 11.8.5. See the release notes for what changed.",
+          "downloadURL": "https://github.com/DX23876/noop/releases/download/v11.8.5-dx/NOOP-ios-unsigned-v11.8.5-dx.ipa",
+          "size": 406722866,
+          "minOSVersion": "17.0"
+        },
+        {
+          "version": "11.8.4",
+          "buildVersion": "325",
+          "date": "2026-10-02",
+          "localizedDescription": "NOOP Forge 11.8.4. See the release notes for what changed.",
+          "downloadURL": "https://github.com/DX23876/noop/releases/download/v11.8.4-dx/NOOP-ios-unsigned-v11.8.4-dx.ipa",
+          "size": 375228383,
+          "minOSVersion": "17.0"
+        },
+        {
+          "version": "11.8.3",
+          "buildVersion": "324",
+          "date": "2026-09-22",
+          "localizedDescription": "NOOP AI 11.8.3. See the release notes for what changed.",
+          "downloadURL": "https://github.com/DX23876/noop/releases/download/v11.8.3-dx/NOOP-ios-unsigned-v11.8.3-dx.ipa",
+          "size": 372393883,
+          "minOSVersion": "17.0"
+        },
+        {
+          "version": "11.8.2",
+          "buildVersion": "323",
+          "date": "2026-09-18",
+          "localizedDescription": "NOOP AI 11.8.2. See the release notes for what changed.",
+          "downloadURL": "https://github.com/DX23876/noop/releases/download/v11.8.2-dx/NOOP-ios-unsigned-v11.8.2-dx.ipa",
+          "size": 372084402,
+          "minOSVersion": "17.0"
+        },
+        {
+          "version": "11.8.1",
+          "buildVersion": "322",
+          "date": "2026-09-17",
+          "localizedDescription": "NOOP AI 11.8.1. See the release notes for what changed.",
+          "downloadURL": "https://github.com/DX23876/noop/releases/download/v11.8.1-dx/NOOP-ios-unsigned-v11.8.1-dx.ipa",
+          "size": 372078121,
+          "minOSVersion": "17.0"
+        },
+        {
+          "version": "10.1.2",
+          "buildVersion": "221",
+          "date": "2026-08-17",
+          "localizedDescription": "NOOP AI 10.1.2. See the release notes for what changed.",
+          "downloadURL": "https://github.com/DX23876/noop/releases/download/v10.1.2-dx/NOOP-ios-unsigned-v10.1.2-dx.ipa",
+          "size": 362089992,
+          "minOSVersion": "17.0"
+        },
+        {
+          "version": "10.1.1",
+          "buildVersion": "220",
+          "date": "2026-08-17",
+          "localizedDescription": "NOOP AI 10.1.1. See the release notes for what changed.",
+          "downloadURL": "https://github.com/DX23876/noop/releases/download/v10.1.1-dx/NOOP-ios-unsigned-v10.1.1-dx.ipa",
+          "size": 362000221,
+          "minOSVersion": "17.0"
+        },
+        {
+          "version": "10.1.0",
+          "buildVersion": "219",
+          "date": "2026-08-15",
+          "localizedDescription": "NOOP AI 10.1.0. See the release notes for what changed.",
+          "downloadURL": "https://github.com/DX23876/noop/releases/download/v10.1.0-dx/NOOP-ios-unsigned-v10.1.0-dx.ipa",
+          "size": 361862652,
+          "minOSVersion": "17.0"
+        },
+        {
+          "version": "9.3.3",
+          "buildVersion": "218",
+          "date": "2026-08-06",
+          "localizedDescription": "NOOP AI 9.3.3 DX Beta. See the release notes for what changed.",
+          "downloadURL": "https://github.com/DX23876/noop/releases/download/v9.3.3-dx-beta/NOOP-ios-unsigned-v9.3.3-dx-beta.ipa",
+          "size": 358563720,
+          "minOSVersion": "17.0"
+        },
+        {
+          "version": "9.3.2",
+          "buildVersion": "217",
+          "date": "2026-08-05",
+          "localizedDescription": "NOOP AI 9.3.2 DX Beta. See the release notes for what changed.",
+          "downloadURL": "https://github.com/DX23876/noop/releases/download/v9.3.2-dx-beta/NOOP-ios-unsigned-v9.3.2-dx-beta.ipa",
+          "size": 357613587,
+          "minOSVersion": "17.0"
+        },
+        {
+          "version": "9.3.1",
+          "buildVersion": "216",
+          "date": "2026-08-01",
+          "localizedDescription": "NOOP AI 9.3.1 DX Beta. See the release notes for what changed.",
+          "downloadURL": "https://github.com/DX23876/noop/releases/download/v9.3.1-dx-beta/NOOP-ios-unsigned-v9.3.1-dx-beta.ipa",
+          "size": 357362633,
+          "minOSVersion": "17.0"
+        },
+        {
+          "version": "9.3.0",
+          "buildVersion": "215",
+          "date": "2026-08-01",
+          "localizedDescription": "NOOP AI 9.3.0 DX Beta. See the release notes for what changed.",
+          "downloadURL": "https://github.com/DX23876/noop/releases/download/v9.3.0-dx-beta/NOOP-ios-unsigned-v9.3.0-dx-beta.ipa",
+          "size": 357259080,
+          "minOSVersion": "17.0"
+        },
+        {
+          "version": "9.2.2",
+          "buildVersion": "214",
+          "date": "2026-07-29",
+          "localizedDescription": "NOOP AI 9.2.2 DX Beta. See the release notes for what changed.",
+          "downloadURL": "https://github.com/DX23876/noop/releases/download/v9.2.2-dx-beta/NOOP-ios-unsigned-v9.2.2-dx-beta.ipa",
+          "size": 357177472,
+          "minOSVersion": "17.0"
+        },
+        {
+          "version": "9.2.1",
+          "buildVersion": "213",
+          "date": "2026-07-28",
+          "localizedDescription": "NOOP AI 9.2.1 DX Beta. See the release notes for what changed.",
+          "downloadURL": "https://github.com/DX23876/noop/releases/download/v9.2.1-dx-beta/NOOP-ios-unsigned-v9.2.1-dx-beta.ipa",
+          "size": 356757740,
+          "minOSVersion": "17.0"
+        }
+      ],
+      "appPermissions": {
+        "entitlements": [
+          "com.apple.developer.healthkit",
+          "com.apple.developer.healthkit.background-delivery",
+          "com.apple.security.application-groups"
+        ],
+        "privacy": {
+          "NSBluetoothAlwaysUsageDescription": "NOOP connects directly to your WHOOP strap over Bluetooth to read heart rate, R-R intervals, battery, and sensor data locally on your iPhone. Nothing leaves your device.",
+          "NSHealthShareUsageDescription": "NOOP reads your own Apple Health data on-device to compute recovery, strain, and sleep. Nothing leaves your device.",
+          "NSHealthUpdateUsageDescription": "NOOP writes the metrics it computes from your strap back into Apple Health, on-device and only when you allow it."
+        }
+      },
+      "version": "12.2.0",
+      "buildVersion": "331",
+      "versionDate": "2026-10-18",
+      "versionDescription": "NOOP Forge 12.2.0. See the release notes for what changed.",
+      "downloadURL": "https://github.com/DX23876/noop/releases/download/v12.2.0-dx/NOOP-ios-unsigned-v12.2.0-dx.ipa",
+      "size": 411979759,
+      "minOSVersion": "17.0"
+    }
+  ]
+}

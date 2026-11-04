@@ -1,0 +1,533 @@
+--- a/Packages/StrandDesign/Sources/StrandDesign/Appearance.swift
++++ b/Packages/StrandDesign/Sources/StrandDesign/Appearance.swift
+@@ -316,9 +316,8 @@
+ public enum SceneBackgroundPrefs {
+     /// The @AppStorage key shared by TodayView and the Settings toggle.
+     public static let enabledKey = "noop.showDayCycleBackground"
+-    /// On (2026-10-02). Every reader uses this one default: Today used to assume off while the Sleep tab
+-    /// assumed on, so someone who never touched the switch saw the night scene on Sleep and none on Today.
+-    public static let defaultEnabled = true
++    /// Plain canvas by default; an explicitly saved sky preference still wins.
++    public static let defaultEnabled = false
+ }
+ 
+ /// Card-surface opacity as a PERCENT (0 = fully see-through, 100 = solid; default 100). `FrostedCardSurface`
+--- a/Packages/StrandDesign/Sources/StrandDesign/Components.swift
++++ b/Packages/StrandDesign/Sources/StrandDesign/Components.swift
+@@ -6,7 +6,7 @@
+ // the uniform, instrument-grade look from the reference. Do not invent ad-hoc cards.
+ 
+ public enum NoopMetrics {
+-    public static let cardRadius: CGFloat = 22   // Apple x WHOOP rounded cards — matches the liquid home card (LiquidTodayView.card)   // Apple x WHOOP: rounded cards
++    public static let cardRadius: CGFloat = NoopVisualStyle.cardRadius
+     /// Compact continuous radius for grouped lists and settings sections.
+     public static let groupedRadius: CGFloat = 17
+     /// Generous radius reserved for a screen's primary hero surface.
+--- a/Packages/StrandDesign/Sources/StrandDesign/NoopVisualStyle.swift
++++ b/Packages/StrandDesign/Sources/StrandDesign/NoopVisualStyle.swift
+@@ -7,47 +7,27 @@
+ // bindings, while cards, gauges, typography, and chrome share one maintainable source of truth.
+ 
+ public enum NoopVisualStyle {
+-    // A cool slate hierarchy: near-black in Dark, paper in Light, both carrying a deliberate blue-cool
+-    // cast rather than the neutral grey these tokens used to mirror from iOS.
+-    //
+-    // WHY THE VALUES MOVED. The previous set was the Apple system grey ramp verbatim (#000000 /
+-    // #1C1C1E / #2C2C2E, border #38383A), which measured as follows and read as washed out for it:
+-    // border carried only 1.45:1 against the surface, so dividers and card rims dissolved into the
+-    // fill; `tertiaryText` reached 2.50:1 in Dark and 1.74:1 in Light; and `secondaryText` in Light
+-    // sat at 3.44:1, under the 4.5:1 AA floor for body text. Surface saturation was 0.034 — grey in
+-    // all but name. Every value below is chosen against `ChromeContrastTests`, which re-checks the
+-    // same arithmetic, so a future edit cannot quietly walk any of it back.
+-    //
+-    // `surfaceTop`/`surfaceBottom` are now genuinely distinct. `NoopPanelSurface` has always drawn a
+-    // LinearGradient between them and promised "a quiet vertical gradient" in its own doc comment,
+-    // but all three tokens held the same hex, so the gradient rendered flat.
+-    //
+-    // This layer deliberately does NOT branch on `ChartStyle` — chart styles recolour data encodings,
+-    // never chrome (see `Appearance.swift`). A cool cast is what lets one chrome carry all seven of
+-    // them; a green or gold one would fight Aurora's frost and Forest's earth.
+-    /// The raw hex behind every chrome token, kept as strings so `ChromeContrastTests` can parse the
+-    /// very values the tokens are built from. A `Color` backed by a dynamic provider cannot be read
+-    /// back, and a test that re-typed the literals would only be checking its own copy — the same
+-    /// reason `StrandPalette.LaneColorTable` exists.
++    // WHOOP-inspired charcoal surfaces. Light appearance keeps its accessible paper palette.
++    // Raw pairs let contrast checks inspect the actual tokens used by every screen.
+     enum ChromeHex {
+         struct Pair {
+             let light: String
+             let dark: String
+         }
+-        static let canvas = Pair(light: "#E7EBF3", dark: "#03050A")
+-        static let surface = Pair(light: "#FFFFFF", dark: "#151B2A")
+-        static let surfaceTop = Pair(light: "#FFFFFF", dark: "#181F30")
+-        static let surfaceBottom = Pair(light: "#F9FAFD", dark: "#121724")
+-        static let inset = Pair(light: "#E8ECF5", dark: "#212B3D")
+-        static let border = Pair(light: "#98A3B6", dark: "#374861")
+-        static let borderHighlight = Pair(light: "#FFFFFF", dark: "#4C5F83")
+-        static let divider = Pair(light: "#98A3B6", dark: "#374861")
+-        static let primaryText = Pair(light: "#0B0F18", dark: "#F4F7FC")
++        static let canvas = Pair(light: "#E7EBF3", dark: "#121518")
++        static let surface = Pair(light: "#FFFFFF", dark: "#25292C")
++        static let surfaceTop = Pair(light: "#FFFFFF", dark: "#292E32")
++        static let surfaceBottom = Pair(light: "#F9FAFD", dark: "#25292C")
++        static let inset = Pair(light: "#E8ECF5", dark: "#171B1F")
++        static let border = Pair(light: "#98A3B6", dark: "#53616C")
++        static let borderHighlight = Pair(light: "#FFFFFF", dark: "#73818B")
++        static let divider = Pair(light: "#98A3B6", dark: "#53616C")
++        static let primaryText = Pair(light: "#0B0F18", dark: "#FFFFFF")
+         // Translucent, NOT opaque: cards and the Liquid hero are partly transparent, so secondary and
+         // tertiary copy composites over whatever is actually behind it. Only the opacity rose — enough
+         // to clear 4.5:1 over canvas, surface and inset alike.
+-        static let secondaryText = Pair(light: "#28313FCC", dark: "#E6EDFAC4")
+-        static let tertiaryText = Pair(light: "#28313FB8", dark: "#E6EDFA96")
++        static let secondaryText = Pair(light: "#28313FCC", dark: "#B6BEC5")
++        static let tertiaryText = Pair(light: "#28313FB8", dark: "#A4AFB8")
+     }
+ 
+     private static func token(_ pair: ChromeHex.Pair) -> Color {
+@@ -79,7 +59,13 @@
+     public static let panelRimHighlightOpacity: Double = 0.92
+     public static let panelRimBorderOpacity: Double = 0.80
+ 
+-    public static let cardRadius: CGFloat = 22
++    // Fixed-geometry score gauges; all dimensions are proportions of the available slot.
++    public static let scoreRingInset: CGFloat = 0.08
++    public static let scoreRingStroke: CGFloat = 0.10
++    public static let scoreNumberScale: CGFloat = 0.28
++    public static let scoreUnitScale: CGFloat = 0.12
++
++    public static let cardRadius: CGFloat = 18
+     public static let compactRadius: CGFloat = 16
+     public static let pillRadius: CGFloat = 999
+     public static let pagePadding: CGFloat = 16
+@@ -151,7 +137,7 @@
+                 )
+             )
+             .overlay {
+-                if let tint {
++                if let tint, scheme == .light {
+                     shape.fill(
+                         LinearGradient(
+                             colors: [tint.opacity(0.055), tint.opacity(0.012), .clear],
+@@ -185,7 +171,7 @@
+             }
+             // Dark keeps its depth shadow; in light the shadow follows the kind.
+             .shadow(
+-                color: scheme == .dark ? .black.opacity(elevated ? 0.34 : 0.18)
++                color: scheme == .dark ? .clear
+                                        : (chrome.shadow ? .black.opacity(elevated ? 0.10 : NoopCardChrome.lightShadowOpacity) : .clear),
+                 radius: elevated ? 18 : (scheme == .dark ? 9 : NoopCardChrome.lightShadowRadius),
+                 x: 0,
+--- a/Packages/StrandDesign/Sources/StrandDesign/Palette.swift
++++ b/Packages/StrandDesign/Sources/StrandDesign/Palette.swift
+@@ -125,8 +125,8 @@
+     public static let organicHeroChamber = Color(light: "#090B12", dark: "#07080D")
+     public static let organicHeroChamberLift = Color(light: "#171B25", dark: "#11141C")
+     public static let organicHeroBorder = Color(light: "#FFFFFF29", dark: "#FFFFFF24")
+-    public static let organicEffort = Color(light: "#FF8A1F", dark: "#FF9F36")
+-    public static let organicRest = Color(light: "#7265FF", dark: "#8B80FF")
++    public static let organicEffort = Color(light: "#2169A8", dark: "#4090E0")
++    public static let organicRest = Color(light: "#49677D", dark: "#83A0B8")
+     public static let organicMissing = Color(light: "#AAB2C0", dark: "#8A94A4")
+ 
+     // MARK: Forge brand ember — the orange face of the NOOP Forge "F" (app icon, Today mark). Brand only,
+--- a/Packages/StrandDesign/Sources/StrandDesign/StrandCard.swift
++++ b/Packages/StrandDesign/Sources/StrandDesign/StrandCard.swift
+@@ -15,7 +15,7 @@
+     /// wash + border bias; nil uses the flat raised surface with no wash.
+     func frostedCardSurface(
+         tint: Color? = nil,
+-        cornerRadius: CGFloat = 22,
++        cornerRadius: CGFloat = NoopVisualStyle.cardRadius,
+         washStrength: Double = 1.0,
+         kind: NoopCardKind? = nil
+     ) -> some View {
+@@ -42,7 +42,7 @@
+     // solid (default). Reading it here makes every card update live when the Settings slider moves.
+     @AppStorage(CardAppearancePrefs.opacityKey) private var cardOpacityPercent = CardAppearancePrefs.defaultPercent
+ 
+-    public init(tint: Color? = nil, cornerRadius: CGFloat = 22, washStrength: Double = 1.0,
++    public init(tint: Color? = nil, cornerRadius: CGFloat = NoopVisualStyle.cardRadius, washStrength: Double = 1.0,
+                 kind: NoopCardKind? = nil) {
+         self.tint = tint
+         self.cornerRadius = cornerRadius
+@@ -92,8 +92,8 @@
+                 shape.fill(
+                     LinearGradient(
+                         colors: [
+-                            (tint ?? .clear).opacity(0.05 * washStrength),
+-                            (tint ?? .clear).opacity(0.015 * washStrength),
++                            (tint ?? .clear).opacity((scheme == .light ? 0.05 : 0) * washStrength),
++                            (tint ?? .clear).opacity((scheme == .light ? 0.015 : 0) * washStrength),
+                             .clear
+                         ],
+                         startPoint: .topLeading, endPoint: .bottomTrailing
+@@ -140,7 +140,7 @@
+ 
+     public init(
+         padding: CGFloat = 16,
+-        cornerRadius: CGFloat = 22,
++        cornerRadius: CGFloat = NoopVisualStyle.cardRadius,
+         tint: Color? = nil,
+         kind: NoopCardKind? = nil,
+         @ViewBuilder content: @escaping () -> Content
+@@ -170,7 +170,7 @@
+     @State private var hovering = false
+     @Environment(\.colorScheme) private var scheme
+ 
+-    public init(cornerRadius: CGFloat = 22) {
++    public init(cornerRadius: CGFloat = NoopVisualStyle.cardRadius) {
+         self.cornerRadius = cornerRadius
+     }
+ 
+@@ -203,7 +203,7 @@
+ 
+ public extension View {
+     /// Apply the Strand card hover lift (shadow + -1px translate + border emphasis).
+-    func strandCardHover(cornerRadius: CGFloat = 22) -> some View {
++    func strandCardHover(cornerRadius: CGFloat = NoopVisualStyle.cardRadius) -> some View {
+         modifier(StrandCardHover(cornerRadius: cornerRadius))
+     }
+ }
+--- a/Packages/StrandDesign/Sources/StrandDesign/TodayComponents.swift
++++ b/Packages/StrandDesign/Sources/StrandDesign/TodayComponents.swift
+@@ -48,7 +48,7 @@
+         shape
+             .fill(StrandPalette.surfaceRaised.opacity(opacity))
+             .overlay {
+-                if let tint {
++                if let tint, colorScheme == .light {
+                     shape.fill(tint.opacity((colorScheme == .dark ? 0.075 : 0.045) * opacity))
+                 }
+             }
+@@ -67,7 +67,7 @@
+                 }
+             }
+             .shadow(
+-                color: colorScheme == .dark ? .black.opacity(0.18)
++                color: colorScheme == .dark ? .clear
+                                             : (chrome.shadow ? .black.opacity(NoopCardChrome.lightShadowOpacity) : .clear),
+                 radius: colorScheme == .dark ? 12 : NoopCardChrome.lightShadowRadius,
+                 x: 0,
+--- a/Packages/StrandDesign/Sources/StrandDesign/Typography.swift
++++ b/Packages/StrandDesign/Sources/StrandDesign/Typography.swift
+@@ -7,7 +7,7 @@
+ 
+ // MARK: - Strand Typography (§9.2)
+ //
+-// Native Apple typography: semantic system roles for prose and navigation, SF Rounded
++// Native Apple typography: semantic system roles for prose and navigation, SF Pro
+ // for the score/numeric identity, and SF Mono for raw/log views. System roles preserve
+ // Dynamic Type's complete scaling curve and language-specific font fallback.
+ //
+@@ -17,15 +17,15 @@
+ 
+     // MARK: Family
+ 
+-    /// Fixed-geometry score numerals use SF Rounded. Prose never comes through this helper; it uses
++    /// Fixed-geometry score numerals use SF Pro. Prose never comes through this helper; it uses
+     /// semantic system roles below so Larger Text receives the native scaling curve.
+     private static func roundedSystem(_ size: CGFloat, weight: Font.Weight) -> Font {
+-        .system(size: size, weight: weight, design: .rounded)
++        .system(size: size, weight: weight, design: .default)
+     }
+ 
+     // MARK: Scale (§9.2)
+ 
+-    /// Display 64–80 / Bold — the SF Rounded gauge score number. Fixed geometry and tabular digits
++    /// Display 64–80 / Bold — the SF Pro gauge score number. Fixed geometry and tabular digits
+     /// keep a changing live value from reflowing its ring or tile.
+     public static func display(_ size: CGFloat = 72) -> Font {
+         roundedSystem(size, weight: .bold).monospacedDigit()
+@@ -37,21 +37,21 @@
+         -size * 0.02
+     }
+ 
+-    /// SF Rounded at an arbitrary fixed size/weight — the house score numeral.
++    /// SF Pro at an arbitrary fixed size/weight — the house score numeral.
+     public static func rounded(_ size: CGFloat, weight: Font.Weight = .bold) -> Font {
+         roundedSystem(size, weight: weight).monospacedDigit()
+     }
+ 
+-    /// Native rounded title. Scales through the complete Dynamic Type curve.
+-    public static let title1 = Font.system(.title, design: .rounded).weight(.bold)
++    /// Native sans-serif title. Scales through the complete Dynamic Type curve.
++    public static let title1 = Font.system(.title, design: .default).weight(.bold)
+ 
+     /// The one figure a detail screen exists for. A step above `title1` and monospaced, for the
+     /// single number a screen is opened to read — not for headings, which `title1` still owns.
+-    public static let heroNumber = Font.system(.largeTitle, design: .rounded)
++    public static let heroNumber = Font.system(.largeTitle, design: .default)
+         .weight(.bold).monospacedDigit()
+ 
+-    /// Native rounded secondary title.
+-    public static let title2 = Font.system(.title2, design: .rounded).weight(.semibold)
++    /// Native sans-serif secondary title.
++    public static let title2 = Font.system(.title2, design: .default).weight(.semibold)
+ 
+     /// Native UI headline.
+     public static let headline = Font.headline.weight(.semibold)
+@@ -102,7 +102,7 @@
+ 
+     // MARK: Numeric variants (tabular digits)
+ 
+-    /// A rounded numeric style at an arbitrary size/weight for live values.
++    /// A sans-serif numeric style at an arbitrary size/weight for live values.
+     public static func number(_ size: CGFloat, weight: Font.Weight = .semibold) -> Font {
+         roundedSystem(size, weight: weight).monospacedDigit()
+     }
+--- a/Packages/StrandDesign/Tests/StrandDesignTests/ChromeContrastTests.swift
++++ b/Packages/StrandDesign/Tests/StrandDesignTests/ChromeContrastTests.swift
+@@ -163,16 +163,14 @@
+ 
+     // MARK: - 3: the dark chrome keeps its cool cast
+ 
+-    /// The whole point of the re-value: the old surfaces were the Apple system grey ramp, saturation
+-    /// 0.034 and below. Without a floor here, a later "tidy-up" slides them back to neutral and the app
+-    /// is washed out again with every contrast test still green.
++    /// Charcoal retains a subtle cool cast, without requiring the previous saturated navy theme.
+     func testDarkSurfacesAreNotNeutralGrey() {
+         for (name, token) in [("canvas", Self.hex.canvas), ("surface", Self.hex.surface),
+                               ("surfaceTop", Self.hex.surfaceTop), ("surfaceBottom", Self.hex.surfaceBottom),
+                               ("inset", Self.hex.inset), ("border", Self.hex.border)] {
+             let s = Self.saturation(token.dark)
+             XCTAssertGreaterThanOrEqual(
+-                s, 0.18, "dark/\(name) saturation \(String(format: "%.3f", s)) — drifting back to grey")
++                s, 0.06, "dark/\(name) saturation \(String(format: "%.3f", s)) — drifting back to grey")
+         }
+     }
+ 
+--- a/Strand/Liquid/LiquidTodayView.swift
++++ b/Strand/Liquid/LiquidTodayView.swift
+@@ -474,7 +474,7 @@
+     /// Hero card fill: a translucent near-black so it floats over the sky (mock rgba(13,14,20,.78)).
+     /// Slightly tighter than the app-wide 30pt hero radius. Liquid Today's three 96pt vessels already
+     /// provide the soft focal shape, so 28pt keeps the surrounding card visually proportional.
+-    private let liquidHeroRadius: CGFloat = 28
++    private let liquidHeroRadius: CGFloat = NoopVisualStyle.cardRadius
+     /// "Card transparency" (0–100, default 100): fades every liquid card surface here — the hero, the
+     /// session-start row, the metric tiles and the `card` helper — in lockstep with the frosted cards.
+     /// Content sits above the surface so it stays readable. Mirrors Kotlin `NoopPrefs.cardOpacityPercent`.
+@@ -1318,27 +1318,16 @@
+             visibleRestScore = fixture.rest
+         }
+         #endif
+-        let hasBackdrop = showDayCycleBackground || skyBehindCards || backgroundStore.isActive
+-        let rimOpacity = LiquidHeroChrome.rimOpacity(
+-            isDark: colorScheme == .dark,
+-            cardOpacity: cardOpacity,
+-            hasBackdrop: hasBackdrop,
+-            reduceTransparency: reduceTransparency,
+-            increasedContrast: colorSchemeContrast == .increased
+-        )
+-        let shadowOpacity = LiquidHeroChrome.shadowOpacity(
+-            isDark: colorScheme == .dark,
+-            cardOpacity: cardOpacity,
+-            hasBackdrop: hasBackdrop,
+-            reduceTransparency: reduceTransparency,
+-            increasedContrast: colorSchemeContrast == .increased
+-        )
+-
+         let ringDiameter = LiquidHeroRingLayout.diameter(rowWidth: heroRowWidth)
+         let ringHitDiameter = LiquidHeroRingLayout.hitDiameter(rowWidth: heroRowWidth)
+         // Effort can be ready before the history-wide dashboard load finishes.
+-        return OrganicScoreHeroClock(dataReady: dataLoaded || effortScore != nil) { frame in
+-        HStack(alignment: .top, spacing: LiquidHeroRingLayout.slotSpacing) {
++        return HStack(alignment: .top, spacing: LiquidHeroRingLayout.slotSpacing) {
++            HeroScoreCell(metric: .rest, label: String(localized: "Sleep"), score: visibleRestScore,
++                          tint: StrandPalette.organicRest,
++                          diameter: ringDiameter, hitDiameter: ringHitDiameter,
++                          onGuide: { guideSection = .rest },
++                          provenance: ringSourceLabel("sleep_performance"),
++                          detailRoute: .metric(HeroRingMetric.rest))
+             // #543 carry: an unscored today shows the last scored night's REAL Charge (labelled as prior by
+             // the state pill) rather than an empty vessel, matching the classic Today, the widget/watch/Live
+             // Activity (`Repository.widgetAnchor`) and Android. Effort deliberately does NOT carry — it is
+@@ -1347,10 +1336,9 @@
+             // iOS widgets, the watch glance and the complications now use. This is the DEFAULT Today
+             // screen, so leaving it on the fixed accent would have kept the contradiction on the surface
+             // most people actually see. No score = nothing to sample; the vessel keeps the domain accent.
+-            HeroScoreCell(metric: .charge, label: DomainTheme.charge.productName, score: chargeScore,
++            HeroScoreCell(metric: .charge, label: String(localized: "Recovery"), score: chargeScore,
+                           tint: chargeScore.map { StrandPalette.chargeRingColor($0) }
+                                 ?? StrandPalette.organicMissing,
+-                          frame: frame,
+                           diameter: ringDiameter, hitDiameter: ringHitDiameter,
+                           onGuide: { guideSection = .charge },
+                           state: dataLoaded ? chargeDisplay.carriedCaption : nil,
+@@ -1360,23 +1348,16 @@
+             // Show the value on the chosen scale (0–100 or WHOOP 0–21) with the matching vessel max, and
+             // one decimal on the compressed 0–21 axis to match the app-wide `effortDisplay` convention
+             // (12.6, not a rounded "13"); the 0–100 hero stays a whole number as before.
+-            HeroScoreCell(metric: .effort, label: DomainTheme.effort.productName,
++            HeroScoreCell(metric: .effort, label: String(localized: "Strain"),
+                           score: effortScore,
+-                          tint: StrandPalette.organicEffort, frame: frame,
++                          tint: StrandPalette.organicEffort,
+                           diameter: ringDiameter, hitDiameter: ringHitDiameter,
+                           onGuide: { guideSection = .effort },
+                           maxValue: effortScale == .whoop ? 21 : 100,
+                           decimals: effortScale == .whoop ? 1 : 0,
+                           provenance: ringSourceLabel("strain"),
+                           detailRoute: .effort(effortReadout))
+-            HeroScoreCell(metric: .rest, label: DomainTheme.rest.productName, score: visibleRestScore,
+-                          tint: StrandPalette.organicRest,
+-                          frame: frame,
+-                          diameter: ringDiameter, hitDiameter: ringHitDiameter,
+-                          onGuide: { guideSection = .rest },
+-                          provenance: ringSourceLabel("sleep_performance"),
+-                          detailRoute: .metric(HeroRingMetric.rest))
+-        }
++
+         }
+         .frame(maxWidth: .infinity)
+         .background(
+@@ -1409,53 +1390,7 @@
+                     .accessibilityHidden(true)
+             }
+         }
+-        // The ONE content surface that gets real iOS 26 glass (material below 26): it is the screen's
+-        // headline card and there is exactly one of it, so the blur pass is affordable — unlike the ten
+-        // metric tiles, which take a lighter fill instead. The dark chamber stays under the glass so the
+-        // rings keep the backing their on-dark text and colours were tuned against.
+-        .background {
+-            let shape = RoundedRectangle(cornerRadius: liquidHeroRadius, style: .continuous)
+-            if colorScheme == .light {
+-                // Light: a light card like the rest of the page (approved 2026-10-02, replacing the
+-                // earlier dark-chamber rule). Its fill never drops below a readable floor, so a 0 %
+-                // card-opacity setting over a sky or photo still leaves the rings and numbers legible.
+-                ZStack {
+-                    shape.fill(StrandPalette.surfaceRaised.opacity(
+-                        reduceTransparency ? 1 : LiquidHeroChrome.lightFillOpacity(cardOpacity: cardOpacity)))
+-                    if colorSchemeContrast == .increased || cardOpacity < 0.99 {
+-                        shape.strokeBorder(
+-                            colorSchemeContrast == .increased ? StrandPalette.hairlineStrong : StrandPalette.hairline,
+-                            lineWidth: colorSchemeContrast == .increased ? 1.5 : NoopMetrics.hairlineWidth)
+-                    }
+-                }
+-                .shadow(color: .black.opacity(NoopCardChrome.lightShadowOpacity),
+-                        radius: NoopCardChrome.lightShadowRadius, y: NoopCardChrome.lightShadowOffsetY)
+-            } else {
+-            ZStack {
+-                shape
+-                    .fill(StrandPalette.organicHeroChamber.opacity(0.78 + cardOpacity * 0.22))
+-                // Real glass only when the card is see-through: on an opaque chamber the glass itself is
+-                // invisible and all that survives is its edge highlight, i.e. the rim the redesign removes.
+-                if cardOpacity < 0.99 && !reduceTransparency {
+-                    shape
+-                        .fill(StrandPalette.organicHeroChamberLift.opacity(0.16 + cardOpacity * 0.12))
+-                        .liquidGlass(in: shape)
+-                        .opacity(cardOpacity)
+-                } else {
+-                    shape.fill(StrandPalette.organicHeroChamberLift.opacity(0.16 + cardOpacity * 0.12))
+-                }
+-                // Dark keeps the optical chamber for the luminous contours. No resting rim (app-wide
+-                // quiet edges); a see-through card or Increase Contrast brings one back.
+-                if colorSchemeContrast == .increased || cardOpacity < 0.99 {
+-                    shape.strokeBorder(
+-                        StrandPalette.organicHeroBorder.opacity(max(0.66, rimOpacity)),
+-                        lineWidth: colorSchemeContrast == .increased ? 1.5 : 1
+-                    )
+-                }
+-            }
+-            .shadow(color: .black.opacity(shadowOpacity), radius: 18, y: 8)
+-            }
+-        }
++        .background(TodayCardSurface(cornerRadius: liquidHeroRadius, surfaceOpacity: cardOpacity))
+     }
+ 
+     // MARK: - Card-AI contexts (#R-explain): one small "ask coach" sparkle per "Your cards" row, built
+@@ -3608,17 +3543,16 @@
+     }
+ }
+ 
+-// MARK: - Hero score cell (count-up number inside an organic waveform ring)
+-
+-/// One of the three hero scores (Charge / Effort / Rest). The number COUNTS UP to the value when data
+-/// lands while the ring morphs to the matching intensity; tapping the ring opens the metric's detail.
++// MARK: - Hero score cell (static circular progress gauge)
++
++/// One of the three local scores. The arc shows the score on its existing scale;
++/// tapping the ring opens the metric detail.
+ /// The label row taps through to the scoring guide.
+ private struct HeroScoreCell: View {
+     let metric: OrganicScoreMetric
+     let label: String
+     let score: Double?            // on whatever scale the caller passes (nil = no data yet)
+     let tint: Color
+-    let frame: OrganicScoreFrame
+     /// Drawn ring size and tap target, from `LiquidHeroRingLayout` for the measured hero width.
+     var diameter: CGFloat = LiquidHeroRingLayout.fallbackDiameter
+     var hitDiameter: CGFloat = LiquidHeroRingLayout.fallbackDiameter
+@@ -3649,15 +3583,7 @@
+ 
+     @ViewBuilder
+     private var gaugeView: some View {
+-        let ring = OrganicScoreRing(
+-            model: model,
+-            tint: tint,
+-            score: score,
+-            decimals: decimals,
+-            frame: frame,
+-            diameter: diameter,
+-            hitDiameter: hitDiameter
+-        )
++        let ring = scoreGauge
+         if let detailRoute {
+             NavigationLink(value: detailRoute) { ring }
+                 .buttonStyle(LiquidPressStyle())
+@@ -3672,6 +3598,35 @@
+                 .accessibilityLabel(Text(label))
+                 .accessibilityValue(Text(spokenValue))
+         }
++    }
++
++    // Static circular arcs update only when the score changes; no frame clock or motion sensor.
++    private var scoreGauge: some View {
++        let size = min(diameter, hitDiameter)
++        let progress = score.map { min(1, max(0, $0 / maxValue)) } ?? 0
++        let stroke = size * NoopVisualStyle.scoreRingStroke
++        return ZStack {
++            Circle().stroke(StrandPalette.surfaceInset, lineWidth: stroke)
++            if score != nil, progress > 0 {
++                Circle().trim(from: 0, to: progress)
++                    .stroke(tint, style: StrokeStyle(lineWidth: stroke, lineCap: .round))
++                    .rotationEffect(.degrees(-90))
++            }
++            HStack(alignment: .firstTextBaseline, spacing: 0) {
++                Text(score.map { String(format: "%.*f", locale: AppLanguage.activeLocale, decimals, $0) } ?? "—")
++                    .font(StrandFont.display(size * NoopVisualStyle.scoreNumberScale))
++                if score != nil, metric != .effort {
++                    Text("%")
++                        .font(StrandFont.rounded(size * NoopVisualStyle.scoreUnitScale, weight: .semibold))
++                }
++            }
++            .foregroundStyle(StrandPalette.textPrimary)
++            .lineLimit(1).minimumScaleFactor(0.65)
++            .padding(stroke)
++        }
++        .padding(size * NoopVisualStyle.scoreRingInset)
++        .frame(width: size, height: size)
++        .contentShape(Circle())
+     }
+ 
+     /// The number with its unit, then the band word for Charge (so its meaning never rests on colour),
+@@ -3706,7 +3661,7 @@
+                     Image(systemName: "chevron.right").font(.system(size: 11, weight: .semibold)).opacity(0.6)
+                 }
+                 // Dark sits in the optical chamber (fixed on-dark ink); Light is an ordinary light card.
+-                .foregroundStyle(colorScheme == .light ? StrandPalette.textSecondary : StrandPalette.onDarkSecondary)
++                .foregroundStyle(StrandPalette.textPrimary)
+                 .frame(minHeight: 28)
+                 // 44 pt to tap: the target reaches into the stack gap above (never the ring's own
+                 // target) and the card padding below, without making the hero taller.
+@@ -3725,7 +3680,7 @@
+                 Text(band.word)
+                     .font(StrandFont.overline)
+                     .tracking(StrandFont.overlineTracking)
+-                    .foregroundStyle(colorScheme == .light ? StrandPalette.textSecondary : StrandPalette.onDarkSecondary)
++                    .foregroundStyle(StrandPalette.textPrimary)
+                     .lineLimit(1).minimumScaleFactor(0.7)
+                     .accessibilityHidden(true)
+             }
